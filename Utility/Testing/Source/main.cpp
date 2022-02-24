@@ -1,5 +1,6 @@
 #include <Manager.h>
 #include <Delegate.h>
+#include <iostream>
 
 class Engine
 {
@@ -24,69 +25,57 @@ private:
 	Engine* engine_;
 };
 
-Transform* MakeTransform(Engine* engine)
+static Transform* MakeTransform(Engine* engine)
 {
 	return new Transform(engine);
 }
 
-void VoidVoid() {}
+void VoidVoid() { std::cout << "Void Void\n"; }
 
-const int numIDs = 10;
-ID<Transform> transIDs[numIDs];
+
+static void DelegateTest()
+{
+	using DelegateType = Delegate<Engine&>;
+	Engine eng;
+	DelegateType del;
+	
+	const size_t numFuncs = 10;
+	DelegateType::IDType delIDs[numFuncs];
+	size_t i;
+
+	for (i = 0; i < numFuncs; ++i)
+	{
+		delIDs[i] = del.Register([i](Engine& eng) { std::cout << "Test" << i << "\n"; });
+	}
+
+	std::cout << "Invoke Test\n";
+	del.Invoke(eng);
+
+	for (i = 0; i < numFuncs; i += 2)
+	{
+		del.UnRegister(delIDs[i]);
+		delIDs[i] = DelegateType::IDType(0);
+	}
+
+	std::cout << "Invoke Test\n";
+	del.Invoke(eng);
+
+	for (i = 0; i < numFuncs; ++i)
+	{
+		if (del.Has(delIDs[i]))
+		{
+			del.UnRegister(delIDs[i]);
+		}
+	}
+
+	std::cout << "Invoke Test\n";
+	del.Invoke(eng);
+}
+
 
 int main()
 {
-	Engine* eng = new Engine();
-	Manager<Transform> tMan;
-	Delegate<> test;
+	DelegateTest();
 
-	auto val = test.Register(VoidVoid);
-	test.UnRegister(val);
-	test.Invoke();
-
-	int i;
-	for (i = 0; i < numIDs; ++i)
-	{
-		transIDs[i] = tMan.Create(eng);
-	}
-
-	tMan.Update(1);
-
-	for (i = 1; i < numIDs; i *= 2)
-	{
-		tMan.Remove(transIDs[i]);
-		transIDs[i] = ID<Transform>();
-	}
-	tMan.Update(1);
-
-	for (i = 0; i < numIDs; i += 2)
-	{
-		if (tMan.Has(transIDs[i]))
-		{
-			tMan.Remove(transIDs[i]);
-			transIDs[i] = ID<Transform>();
-		}
-	}
-	tMan.Update(1);
-
-	for (i = 1; i < numIDs; i *= 2)
-	{
-		if (!transIDs[i].IsValid())
-		{
-			transIDs[i] = tMan.Create(eng);
-		}
-	}
-	tMan.Update(1);
-
-	for (i = 0; i < numIDs; i += 2)
-	{
-		if (!transIDs[i].IsValid())
-		{
-			transIDs[i] = tMan.Create(eng);
-		}
-	}
-	tMan.Update(1);
-
-	delete eng;
 	return 0;
 }
