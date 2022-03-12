@@ -33,5 +33,11 @@
     <ClInclude Include="Source\Proxy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Flyweight.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CommonConcepts.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

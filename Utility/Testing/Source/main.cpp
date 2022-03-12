@@ -1,6 +1,7 @@
 #include <Manager.h>
 #include <Delegate.h>
 #include <iostream>
+#include <Flyweight.h>
 
 class Engine
 {
@@ -18,12 +19,29 @@ public:
 		engine_(engine) {}
 	Transform(Transform&& other) = default;
 	Transform& operator=(Transform&& other) = default;
-	void Update(float dt) { dt; }
+	
 	void Init() {}
+	void Update(float dt) { dt; }
+
+	friend void Init();
+	friend void Update();
 
 private:
 	Engine* engine_;
 };
+
+template<>
+void Init<Transform>(Transform& transform)
+{
+	transform.Init();
+}
+
+template<>
+void Update<Transform>(Transform& transform, float dt)
+{
+	transform.Update(dt);
+}
+
 
 static Transform* MakeTransform(Engine* engine)
 {
@@ -72,6 +90,16 @@ static void DelegateTest()
 	del.Invoke(eng);
 }
 
+static void FlyweightTest()
+{
+	Engine eng;
+	Flyweight fly;
+
+	fly.Add<Transform>(&eng);
+
+	fly.Init();
+	fly.Update(.01f);
+}
 
 int main()
 {

@@ -1,8 +1,15 @@
+//---------------------------------------------------------------------------------------
+// Author:      Kenny Mecham
+// Date:        02/24/2022
+// Project:     Utility
+// Description: Holds multiple bonds between two types of objects, allowing for type-safe
+//              conversions between objects using a type-safe ID system
+//---------------------------------------------------------------------------------------
 #pragma once
-
 #include <unordered_map>
 #include "ID.h"
 
+// A proxy type that allows for a type safe equivilancy from one object to another
 template <typename To, typename From>
 class Proxy
 {
