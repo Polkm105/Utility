@@ -7,14 +7,23 @@
 //              type erased containers in other projects
 //---------------------------------------------------------------------------------------
 #pragma once
-
 #include <concepts>
 #include <vector>
 #include <memory>
 #include <algorithm>
-#include "ManagedVector.h"
-#include "CommonConcepts.h"
 #include <functional>
+
+template <typename Type>
+concept Updateable = requires(Type a, float dt)
+{
+	{ a.Update(dt) } -> std::convertible_to<void>;
+};
+
+template <typename Type>
+concept Initable = requires(Type a)
+{
+	{ a.Init() } -> std::convertible_to<void>;
+};
 
 // Initial funciton template definitions to prevent compiler confusions within the flyweight class
 template <Updateable T>
@@ -31,7 +40,7 @@ void Init(T& type)
 
 // The Flyweight class itself, allows for any type to be added as long as the type has the required free-function overloads
 // Required overloads: void Init(), void Update(float dt)
-class Flyweight
+class BasicFlyweight
 {
 public:
 	struct FlyweightTypeConcept;
@@ -39,20 +48,18 @@ public:
 	template<typename T>
 	class FlyweightType;
 
-	using IDType = ID<std::unique_ptr<FlyweightTypeConcept>>;
-
 	// adds a specified type constructed with the given arguements. Types are NOT stored contiguously in memory
 	template<typename T, typename ... Args>
-	IDType Add(Args&& ...args)
+	void Add(Args&& ...args)
 	{
 		std::unique_ptr<FlyweightType<T>> ptr(new FlyweightType<T>(std::forward<Args>(args)...));
-		return types_.Add(std::move(ptr));
+		types_.emplace_back(std::move(ptr));
 	}
 
 	// remove a previously added type
-	void Remove(IDType id)
+	void Remove(size_t index)
 	{
-		types_.Remove(id);
+		types_.erase(types_.begin() + index);
 	}
 
 	// initialize all added types
@@ -103,5 +110,5 @@ private:
 	};
 
 	// a managed vector for speed optimized adding, removing, traversing, and accessing
-	ManagedVector<std::unique_ptr<FlyweightTypeConcept>> types_;
+	std::vector<std::unique_ptr<FlyweightTypeConcept>> types_;
 };

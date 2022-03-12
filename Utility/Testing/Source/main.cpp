@@ -1,12 +1,21 @@
-#include <Manager.h>
-#include <Delegate.h>
+
+#define ENGINE
+#define COMPONENTS
+#define FLYWEIGHT
+
+
 #include <iostream>
-#include <Flyweight.h>
+
+
+#ifdef ENGINE
 
 class Engine
 {
 };
 
+#endif
+
+#ifdef COMPONENTS
 class Component
 {
 
@@ -23,34 +32,32 @@ public:
 	void Init() {}
 	void Update(float dt) { dt; }
 
-	friend void Init();
-	friend void Update();
+	friend void Init(Transform& transform)
+	{
+		transform.Init();
+	}
+
+	friend void Update(Transform& transform, float dt)
+	{
+		transform.Update(dt);
+	}
 
 private:
 	Engine* engine_;
 };
-
-template<>
-void Init<Transform>(Transform& transform)
-{
-	transform.Init();
-}
-
-template<>
-void Update<Transform>(Transform& transform, float dt)
-{
-	transform.Update(dt);
-}
-
 
 static Transform* MakeTransform(Engine* engine)
 {
 	return new Transform(engine);
 }
 
+#endif
+
+
+#ifdef DELEGATES
+#include <Delegate.h>
+
 void VoidVoid() { std::cout << "Void Void\n"; }
-
-
 static void DelegateTest()
 {
 	using DelegateType = Delegate<Engine&>;
@@ -89,21 +96,27 @@ static void DelegateTest()
 	std::cout << "Invoke Test\n";
 	del.Invoke(eng);
 }
+#endif
+
+#ifdef FLYWEIGHT
+#include <BasicFlyweight.h>
 
 static void FlyweightTest()
 {
 	Engine eng;
-	Flyweight fly;
+	BasicFlyweight fly;
 
 	fly.Add<Transform>(&eng);
+	fly.Remove(0);
 
 	fly.Init();
 	fly.Update(.01f);
 }
+#endif
 
 int main()
 {
-	DelegateTest();
+	FlyweightTest();
 
 	return 0;
 }

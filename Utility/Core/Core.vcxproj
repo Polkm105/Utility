@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\BasicFlyweight.h" />
     <ClInclude Include="Source\CommonConcepts.h" />
     <ClInclude Include="Source\Delegate.h" />
     <ClInclude Include="Source\Factory.h" />
