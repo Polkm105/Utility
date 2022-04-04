@@ -27,7 +27,7 @@ class Manager
 public:
 	// Creates a held type and queues it to add to the managed vector
 	template<typename ...Args>
-	inline IDType Create(Args... args)
+	inline IDType Create(Args&&... args)
 	{
 		ManagedType type(std::forward<Args>(args)...);
 		IDType id = container_.GetNextID();
