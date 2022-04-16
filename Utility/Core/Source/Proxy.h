@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------------------
 #pragma once
 #include <unordered_map>
-#include "ID.h"
+import <cassert>;
 
 // A proxy type that allows for a type safe equivilancy from one object to another
 template <typename To, typename From>

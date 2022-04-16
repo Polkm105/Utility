@@ -1,17 +1,17 @@
-#pragma once
-#include <concepts>
-#include <functional>
-#include "ID.h"
+export module Ref;
+import TypeSafeID;
+import <concepts>;
+import <functional>;
 
-template <typename T, typename IDType = ID<T>>
+export template <typename T, typename IDType = TypeSafeID<T>>
 concept MemoryVolatile = requires(T a, std::function<void(T*)> func, IDType id)
 {
-  { RegisterOnMove(a, func) } -> std::convertible_to<ID<T>>;
+  { RegisterOnMove(a, func) } -> std::convertible_to<TypeSafeID<T>>;
   { UnregisterOnMove(a, id) };
   std::movable<T>;
 };
 
-template<MemoryVolatile T>
+export template<MemoryVolatile T>
 class Ref
 {
 public:
@@ -53,7 +53,7 @@ public:
   T* operator->() { return base_; }
 
 private:
-  ID<T> RegisterWithBase()
+  TypeSafeID<T> RegisterWithBase()
   {
     return RegisterOnMove(*base_, [this](T* ptr) { OnReallocate(ptr); });
   }
@@ -71,5 +71,5 @@ private:
   }
 
   T* base_{ nullptr };
-  ID<T> id_{};
+  TypeSafeID<T> id_{};
 };

@@ -18,16 +18,7 @@
     <ClInclude Include="Source\Factory.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ID.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Manager.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Delegate.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ManagedVector.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Proxy.h">
@@ -42,8 +33,19 @@
     <ClInclude Include="Source\BasicFlyweight.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Ref.h">
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Delegate.ixx">
       <Filter>Source Files</Filter>
-    </ClInclude>
+    </ClCompile>
+    <ClCompile Include="Source\Ref.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TypeSafeID.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ManagedVector.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -16,6 +16,8 @@
 #include "CommonConcepts.h"
 #include <functional>
 
+import TypeSafeID;
+
 // Initial funciton template definitions to prevent compiler confusions within the flyweight class
 template <Updateable T>
 void Update(T& type, float dt)
@@ -39,7 +41,7 @@ public:
 	template<typename T>
 	class FlyweightType;
 
-	using IDType = ID<std::unique_ptr<FlyweightTypeConcept>>;
+	using IDType = TypeSafeID<std::unique_ptr<FlyweightTypeConcept>>;
 
 	// adds a specified type constructed with the given arguements. Types are NOT stored contiguously in memory
 	template<typename T, typename ... Args>

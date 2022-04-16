@@ -14,13 +14,14 @@
 #include <cstddef>
 #include <algorithm>
 #include <utility>
-#include "ID.h"
-#include "ManagedVector.h"
+import ManagedVector;
 #include "CommonConcepts.h"
+
+import TypeSafeID;
 
 // Manages a vector of specified types, places and removes queued objects on the next update to prevent memory movement while updating
 // the placement of objects could be optimized to be directly after the object finishes updating, and the removal could be the same
-template <ManagedVectorType ManagedType, typename IDType = ID<ManagedType>>
+template <ManagedVectorType ManagedType, typename IDType = TypeSafeID<ManagedType>>
 requires Updateable<ManagedType>
 class Manager
 {

@@ -6,16 +6,17 @@
 //              offering type-safe ID access and remove. Very fast to, but also very 
 //              large in memory 
 //---------------------------------------------------------------------------------------
-#pragma once
-#include <vector>
-#include <unordered_map>
-#include <concepts>
-#include <type_traits>
-#include <utility>
-#include <assert.h>
-#include "ID.h"
+export module ManagedVector;
+import TypeSafeID;
+import <cassert>;
+import <utility>;
+import <concepts>;
+import <type_traits>;
+import <vector>;
+import <unordered_map>;
+import <functional>;
 
-template <typename T>
+export template <typename T>
 concept ManagedVectorType = requires(T a)
 {
 	std::move_constructible<T>;
@@ -25,7 +26,7 @@ concept ManagedVectorType = requires(T a)
 // A Vector that keeps all object contigously in memory
 // allows for average of O(1) time for add, remove, find, and access 
 // uses swap-pop to keep memory contiguous and utilizes hash maps + TypeSafeID's for fast lookups
-template <ManagedVectorType ManagedType, typename IDType = ID<ManagedType>>
+export template <ManagedVectorType ManagedType, typename IDType = TypeSafeID<ManagedType>>
 class ManagedVector
 {
 public:
@@ -95,6 +96,7 @@ public:
 			{
 				const auto& ID = index_to_id_[i];
 				Remove(ID);
+				break;
 			}
 		}
 	}
@@ -128,13 +130,15 @@ public:
 	// Gets a reference to a object with the specified ID
 	inline ManagedType& Get(const IDType& id)
 	{
-		return const_cast<ManagedType&>(const_cast<const ManagedVector*>(this)->Get(id));
+		const auto& iter = id_to_index_.find(id);
+		assert(iter != id_to_index_.end()); // Given id is not valid within the managed container
+		return container_[iter->second];
 	}
 
 	// Gets a const reference to an object with the specified ID
 	inline const ManagedType& Get(const IDType& id) const
 	{
-		auto iter = id_to_index_.find(id);
+		const auto& iter = id_to_index_.find(id);
 		assert(iter != id_to_index_.end()); // Given id is not valid within the managed container
 		return container_[iter->second];
 	}
@@ -169,6 +173,18 @@ public:
 		return managedVec.container_.end();
 	}
 
+	// Gets an iterator to the beginning of the vector
+	friend std::vector<ManagedType>::const_iterator begin(const ManagedVector& managedVec) noexcept
+	{
+		return managedVec.container_.begin();
+	}
+
+	// Gets an iterator to the end of the vector
+	friend std::vector<ManagedType>::const_iterator end(const ManagedVector& managedVec) noexcept
+	{
+		return managedVec.container_.end();
+	}
+
 private:
 	std::vector<ManagedType> container_{};							// the container holding all the objects
 	std::unordered_map<size_t, IDType> index_to_id_{};	// the hash map that converts an objects index to it's ID
@@ -185,11 +201,4 @@ private:
 	}
 };
 
-template <typename Type, typename StorageType>
-struct std::hash<ID<Type, StorageType>>
-{
-	std::size_t operator()(const ID<Type, StorageType>& id) const
-	{
-		return std::hash<StorageType>{}(id.Value());
-	}
-};
+
